@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="well col-md-6">
+    <legend>
+        Cadastrar Militar
+    </legend>
+    <form method="post" action="">
+        {%csrf_token%}
+        <table>
+            {{form.as_table}}
+            <tr>
+                <td></td>
+                <td>
+                    <input type="submit" value="salvar" class="btn btn-primary"/>
+                    <input type="reset" value="limpar" class="btn btn-warning"/>
+                </td>
+            <tr>
+        </table>
+    </form>
+    </div>
+</div>
+
+{% endblock content %}

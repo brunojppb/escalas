@@ -1,0 +1,90 @@
+<!doctype html>
+<html style="" xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    {% block title %}
+    <title>Casa Militar - PARAIBA</title>
+    {% endblock title %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/cupertino/jquery-ui-1.10.4.custom.min.css">
+    <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery-2.0.3.min.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery-ui-1.10.4.custom.min.js"></script>
+    <style type="text/css">
+        .centralizar{
+            text-align: center;
+        }
+    </style>
+  </head>
+
+  <body class="">
+    <div class="navbar navbar-default navbar-inverse navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+            <span class="sr-only">Toggle navigation</span>
+          </button><a class="navbar-brand">Casa Militar</a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse"></div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-2">
+            <p style="text-align: center">Gerência Executiva de Segurança</p>
+            <hr />
+        </div>
+        <div class="col-md-10">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-2">
+          <ul class="nav nav-pills nav-stacked">
+            <li class="active"> <a href="#">Militar</a>
+
+            </li>
+            <li> <a href="/escalas/militar/criar/">Cadastrar militar</a>
+
+            </li>
+            <li> <a href="/escalas/militar/listar/">Consultar Militar</a>
+
+            </li>
+          </ul>
+          <ul class="nav nav-pills nav-stacked">
+            <li class="active"> <a href="#">Guarnição</a>
+
+            </li>
+            <li> <a href="/escalas/guarnicao/criar/">Criar guarnição</a>
+
+            </li>
+            <li> <a href="/escalas/guarnicao/listar/">Consultar guarnição</a>
+
+            </li>
+          </ul>
+          <ul class="nav nav-pills nav-stacked">
+            <li class="active"> <a href="#">Escala</a>
+
+            </li>
+            <li> <a href="/escalas/escala/criar">Crair escala</a>
+
+            </li>
+            <li> <a href="#">Consultar escala</a>
+
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-10">
+          {% block content %}
+        <p>Insira o conteudo dinamico aqui</p>
+        {% endblock content %}
+
+        </div>
+      </div>
+    </div>
+  </body>
+
+</html>

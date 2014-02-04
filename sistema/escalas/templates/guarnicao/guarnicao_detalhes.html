@@ -1,0 +1,28 @@
+{%extends "base.html"%}
+
+{%block title%}
+	<title>Guarnicao {{guarnicao.nome}}</title>
+{%endblock title%}
+
+
+{%block content%}
+	<h1>{{guarnicao.missao}}</h1>
+	<h4>Guarnição - {{guarnicao.nome}}</h3>
+	<table class="table table-striped table-bordered table-hover">
+		<tr>
+			<th>Posto/Grad</th>
+			<th>Nome</th>
+			<th>Matricula</th>
+			<th>Função</th>
+		</tr>
+		{%for militar in militares%}
+		<tr>
+			<td>{{militar.get_posto_display}}</td>
+			<td>{{militar.nome_de_guerra}}</td>
+			<td>{{militar.matricula}}</td>
+			<td>{{militar.funcao}}</td>
+		</tr>
+		{%endfor%}
+	</table>
+
+{%endblock content%}

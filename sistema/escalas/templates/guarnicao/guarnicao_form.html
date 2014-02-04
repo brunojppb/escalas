@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="well col-md-6">
+        <fieldset>
+            <form method="post" action="" class="form-horizontal">
+            <legend>
+                Cadastrar Guarnição
+                <span style="float: right">
+                    <input type="submit" value="salvar" class="btn btn-primary" id="salvar"/>
+                    <input type="reset" value="limpar" class="btn btn-warning"/>
+                </span>
+            </legend>
+            {%csrf_token%}
+                <div class="form-group">
+                    <label for="inputNome" class="col-lg-2 control-label">Nome</label>
+                    <div class="col-lg-10">
+                      <input class="form-control" id="inputNome" placeholder="Nome" type="text" name="nome"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputMissao" class="col-lg-2 control-label">Missão</label>
+                    <div class="col-lg-10">
+                      <input class="form-control" id="inputMissao" placeholder="Missao" type="text" name="missao"/>
+                    </div>
+                </div>
+            <hr />
+            <legend>
+                Militares Componentes
+            </legend>
+        </form>
+        <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Posto/Grad</th>
+                        <th>Nome</th>
+                        <th>Matricula</th>
+                        <th>Remover</th>
+                    </tr>
+                </thead>
+                <tbody id="componentes">
+
+                </tbody>
+            </table>
+    </div>
+        </fieldset>
+    <!-- BUSCAR MILITARES -->
+    <div class="col-md-6">
+        <legend>Buscar Militares</legend>
+        <div class="input-group">
+            <span class="input-group-addon">
+
+        </span>
+        <input type="text" id="query" class="form-control" placeholder="digite o nome de guerra do militar"/>
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" id="buscar">
+                Buscar
+            </button>
+        </span>
+        </div>
+        <hr />
+        <table id="resultado" class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Posto/Grad</th>
+                    <th>Nome</th>
+                    <th>Matricula</th>
+                    <th>Adicionar</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        //CRIANDO A BUSCA E ADICAO DE MILITARES NA GUARNICAO
+        var idMilitares = new Array();
+        $("#buscar").click(function(){
+            $("#resultado tbody").empty();
+            $.ajax({
+                url: '/escalas/militar/ajax/',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    q: $("#query").val()
+                },
+            })
+            .done(function(json) {
+                var addImg = $("<img/>").attr("src", "{{ STATIC_URL }}img/add.png");
+                var removerImg = $("<img/>").attr("src", "{{ STATIC_URL }}img/trash.png");
+                $.each(json, function(index, militar) {
+                    var addImg = $("<img/>").attr("src", "{{ STATIC_URL }}img/add.png");
+                    var removerImg = $("<img/>").attr("src", "{{ STATIC_URL }}img/trash.png");
+                    var componentes = $("#componentes");
+                    var tr = $("<tr/>");
+                    var td = $("<td/>").text(militar.posto);
+                    tr.append(td);
+                    var td = $("<td/>").text(militar.nome_de_guerra);
+                    tr.append(td);
+                    var td = $("<td/>").text(militar.matricula);
+                    tr.append(td);
+                    var link = $("<a/>");
+                    var td = $("<td/>").attr("style", "text-align: center");
+                    td.append(link);
+                    tr.append(td);
+                    link.click(function(event) {
+                        if(jQuery.inArray(militar.id, idMilitares) == -1){
+                            idMilitares.push(militar.id);
+                            console.log(idMilitares);
+                            var clonado = tr.clone();
+                            clonado.addClass('militar' + militar.id);
+                            var removeLink = clonado.children("td").children("a");
+                            componentes.append(clonado);
+                            //remove o icone de Add que veio no clone
+                            removeLink.children("img").remove();
+                            removeLink.append(removerImg);
+                            removeLink.click(function(event) {
+                                event.preventDefault();
+                                if(jQuery.inArray(militar.id, idMilitares) != -1){
+                                    var indice = jQuery.inArray(militar.id, idMilitares);
+                                    idMilitares.splice(indice, 1);
+                                    console.log(idMilitares);
+                                    $(".militar" + militar.id).remove();
+                                }
+                                else{
+                                    alert("Militar removido");
+                                }
+                            });
+                        }
+                        else{
+                            alert( militar.posto + " " + militar.nome_de_guerra + " Já Adicionado!");
+                        }
+                    }).append(addImg);
+                    $("#resultado tbody").append(tr);
+                });
+            })
+            .fail(function() {
+                console.log("error");
+            })
+            .always(function() {
+                console.log("complete");
+            });
+        });
+    //SUBMETENDO FORMULARIO E SALVANDO A GUARNICAO
+    $("#salvar").click(function(event) {
+        //evita que o botao execute a acao padrao
+        $(this).attr("disabled", true);
+        event.preventDefault();
+        $.ajax({
+            url: '/escalas/guarnicao/criar/',
+            type: 'POST',
+            data: {
+            nome: $("#inputNome").val(),
+            missao: $("#inputMissao").val(),
+            militares: idMilitares,
+            //token passado para o django
+            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value
+            },
+        })
+        .done(function() {
+            console.log("success");
+        })
+        .fail(function() {
+            console.log("error");
+        })
+        .always(function() {
+            console.log("complete");
+        });
+    });
+});
+</script>
+{% endblock content %}
