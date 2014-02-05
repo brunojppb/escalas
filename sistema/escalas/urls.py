@@ -10,7 +10,8 @@ urlpatterns = patterns('',
     url(r'^militar/editar/(?P<ident>\d+)/$', militar_editar),
     url(r'^militar/criar/$', militar_criar),
     url(r'^militar/listar/$', militar_listar),
-    url(r'^militar/ajax/$', ajax),
+    url(r'^militar/consultar/$', consultar_militar_via_ajax),
     url(r'^escala/criar/$', escala_criar),
+    url(r'^escala/consultar/$', consultar_guarnicao_via_ajax),
 
 )

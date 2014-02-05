@@ -83,7 +83,7 @@
         $("#buscar").click(function(){
             $("#resultado tbody").empty();
             $.ajax({
-                url: '/escalas/militar/ajax/',
+                url: '/escalas/militar/consultar/',
                 type: 'GET',
                 dataType: 'json',
                 data: {

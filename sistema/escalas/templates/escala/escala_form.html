@@ -2,21 +2,46 @@
 
 {% block content %}
 <div class="row">
-    <div class="well col-md-8">
-        <form action="" method="post" id="criar">
+    <div class="well col-md-6">
+        <!-- CRIAR ESCALA -->
+<fieldset>
+            <form method="post" action="" class="form-horizontal" id="form">
+            <legend>
+                Criar Escala
+                <span style="float: right">
+                    <input type="submit" value="salvar" class="btn btn-primary" id="salvar"/>
+                    <input type="reset" value="limpar" class="btn btn-warning"/>
+                </span>
+            </legend>
             {%csrf_token%}
-            {{escala.as_p}}
-            <input type="submit" value="salvar">
+                {{escala.as_table}}
+            <hr />
+            <legend>
+                Guarnições Escaladas
+            </legend>
         </form>
+        <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                    <th>Nome</th>
+                    <th>Remover</th>
+                    </tr>
+                </thead>
+                <tbody id="guarnicoes">
+
+                </tbody>
+            </table>
+            </fieldset>
     </div>
     <!-- BUSCAR GUARNICOES -->
-    <div class="col-md-4">
+    <div class="col-md-6">
         <legend>Buscar Guarnições</legend>
         <div class="input-group">
             <span class="input-group-addon">
 
         </span>
-        <input type="text" id="query" class="form-control" placeholder="nome da Guarnições"/>
+        <input type="text" id="query" class="form-control" placeholder="nome da Guarnição"/>
         <span class="input-group-btn">
             <button class="btn btn-default" type="button" id="buscar">
                 Buscar
@@ -29,6 +54,7 @@
                 <tr>
                     <th>Id</th>
                     <th>Nome</th>
+                    <th>Adicionar</th>
                 </tr>
             </thead>
             <tbody>
@@ -40,8 +66,101 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
+        var idGuarnicoes = new Array();
+        //CONSULTA DE GUARNICOES
+        $("#buscar").click(function(event) {
+            $("#resultado tbody").empty();
+            $.ajax({
+                url: '/escalas/escala/consultar/',
+                dataType: 'json',
+                data: {q: $("#query").val()},
+            })
+            .done(function(json) {
+                console.log(json);
+                //iteramos no JSON de resposta para exibir as guarnicoes
+                $.each(json, function(index, guarnicao) {
+                    //imagens que servirao para interface do usuario
+                    var addImg = $("<img/>").attr("src", "{{ STATIC_URL }}img/add.png");
+                    var removerImg = $("<img/>").attr("src", "{{ STATIC_URL }}img/trash.png");
+                    //nova linha da tabela de resultados
+                    var tr = $("<tr/>");
+                    var td = $("<td/>").text(guarnicao.id);
+                    tr.append(td);
+                    var td = $("<td/>").text(guarnicao.nome);
+                    tr.append(td);
+                    var link = $("<a/>")
+                    var td = $("<td/>").attr('style', 'text-align: center');;
+                    td.append(link);
+                    tr.append(td);
+                    link.click(function(event) {
+                        //se a guarnicao nao estiver contida no array
+                        if(jQuery.inArray(guarnicao.id, idGuarnicoes) == -1){
+                            //adicionamos a guarnicao no array
+                            idGuarnicoes.push(guarnicao.id);
+                            //agora clonamos a linha da tabela resultado
+                            //e colamos na tabela de guarnicoes escaladas
+                            var clonado = tr.clone();
+                            //adicionaremos uma classe dinamica para facilitar a exclusao
+                            clonado.addClass('guarnicao' + guarnicao.id);
+                            //agora iremos adicionar clone na tabela de resultados
+                            $("#guarnicoes").append(clonado);
+                            //agora precisamos mudar o link do clone para remover
+                            var removeLink = clonado.children('td').children('a');
+                            //modificamos a imagem para remove
+                            removeLink.children('img').remove();
+                            removeLink.append(removerImg);
+                            //adicionar um novo evento ao click no link
+                            removeLink.click(function(event) {
+                               event.preventDefault();
+                               //se a guarnicao estiver contida no array
+                               if(jQuery.inArray(guarnicao.id, idGuarnicoes) != -1){
+                                    //pegamos o indice da guarnicao dentro do array
+                                    var indice = jQuery.inArray(guarnicao.id, idGuarnicoes);
+                                    //removemos do array
+                                    idGuarnicoes.splice(indice, 1);
+                                    //removemos a linha clicada atraves da classe dinamica
+                                    $(".guarnicao" + guarnicao.id).remove();
+                               }
+                            });
+                        }
+                        else{
+                            alert("Guarnicao ja adicionada");
+                        }
+                    }).append(addImg);
+                    //adicionando na tabela de Resultados
+                    $("#resultado tbody").append(tr);
+
+                });
+            })
+            .fail(function() {
+                console.log("error");
+            })
+            .always(function() {
+                console.log("complete");
+            });
+
+        });
+
+        //CRIACAO DA ESCALA
         $("#id_data").datepicker();
-        alert("ok");
+        $("#form").submit(function(event) {
+            event.preventDefault();
+            $.ajax({
+                url: '/escalas/escala/criar/',
+                type: 'POST',
+                data: $(this).serialize(),
+            })
+            .done(function(json) {
+                console.log(json);
+                console.log("success");
+            })
+            .fail(function() {
+                console.log("error");
+            })
+            .always(function() {
+                console.log("complete");
+            });
+        });
     });
 </script>
 

@@ -76,7 +76,7 @@ def militar_editar(request, ident):
         return render(request, 'militar/militar_form.html', {'form': form})
 
 
-def ajax(request):
+def consultar_militar_via_ajax(request):
         nome = request.GET.get('q')
         militares = Militar.objects.filter(nome_de_guerra__icontains=nome)
         resultado = [{'id': m.id,
@@ -91,14 +91,30 @@ def ajax(request):
 
 def escala_criar(request):
     if request.method == 'POST':
-        escala = EscalaForm(request.POST)
+        esc = Escala()
+        escala = EscalaForm(request.POST, instance=esc)
+        #print escala
         if escala.is_valid():
-            escala.save()
-            return HttpResponseRedirect('/escalas/militar/listar/')
-
+            print 'escala valida'
+            esc.save()
+            return HttpResponse(json.dumps(esc.id), content_type="application/json")
+        else:
+            print 'escala invalida'
+            error = True
+            return render(request, 'militar/militar_form.html', {'error': error})
     else:
         escala = EscalaForm()
         return render(request, 'escala/escala_form.html', {'escala': escala})
+
+def consultar_guarnicao_via_ajax(request):
+    nome = request.GET.get('q')
+    guarnicoes = Guarnicao.objects.filter(nome__icontains=nome)
+    resultado = [{
+            'id': g.id,
+            'nome': g.nome
+        } for g in guarnicoes]
+    print resultado
+    return HttpResponse(json.dumps(resultado, sort_keys=True, indent=4), content_type="application/json")
 
 
 
