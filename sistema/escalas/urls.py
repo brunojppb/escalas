@@ -13,5 +13,6 @@ urlpatterns = patterns('',
     url(r'^militar/consultar/$', consultar_militar_via_ajax),
     url(r'^escala/criar/$', escala_criar),
     url(r'^escala/consultar/$', consultar_guarnicao_via_ajax),
+    url(r'^escala/add/$', adicionar_guarnicoes_em_escala),
 
 )

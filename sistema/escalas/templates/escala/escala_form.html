@@ -79,6 +79,7 @@
                 console.log(json);
                 //iteramos no JSON de resposta para exibir as guarnicoes
                 $.each(json, function(index, guarnicao) {
+                    console.log(guarnicao.id);
                     //imagens que servirao para interface do usuario
                     var addImg = $("<img/>").attr("src", "{{ STATIC_URL }}img/add.png");
                     var removerImg = $("<img/>").attr("src", "{{ STATIC_URL }}img/trash.png");
@@ -145,6 +146,7 @@
         $("#id_data").datepicker();
         $("#form").submit(function(event) {
             event.preventDefault();
+            $("#salvar").attr('disabled', true);
             $.ajax({
                 url: '/escalas/escala/criar/',
                 type: 'POST',
@@ -152,6 +154,25 @@
             })
             .done(function(json) {
                 console.log(json);
+                $.ajax({
+                    url: '/escalas/escala/add/',
+                    type: 'POST',
+                    data: {
+                        id: json,
+                        guarnicoes: idGuarnicoes,
+                        //token passado para o django
+                        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value
+                    },
+                })
+                .done(function() {
+                    console.log("success");
+                })
+                .fail(function() {
+                    console.log("error");
+                })
+                .always(function() {
+                    console.log("complete");
+                });
                 console.log("success");
             })
             .fail(function() {

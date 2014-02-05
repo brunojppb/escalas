@@ -116,6 +116,23 @@ def consultar_guarnicao_via_ajax(request):
     print resultado
     return HttpResponse(json.dumps(resultado, sort_keys=True, indent=4), content_type="application/json")
 
+def adicionar_guarnicoes_em_escala(request):
+    if request.method == 'POST':
+        idEscala = request.POST.get('id', '')
+        guarnicoes = request.POST.getlist('guarnicoes[]')
+        print 'id das guarnicoes:'
+        print guarnicoes
+        if idEscala != '':
+            escala = Escala.objects.get(id=int(idEscala))
+            for g in guarnicoes:
+                guarnicao = Guarnicao.objects.get(id=int(g))
+                escala.guarnicoes.add(guarnicao)
+            return HttpResponseRedirect('/escalas/guarnicao/listar/')
+        else:
+            error = True
+            return render(request, 'escalas/escala_form.html', {'error': error})
+
+
 
 
 
